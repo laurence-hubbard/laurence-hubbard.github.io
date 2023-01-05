@@ -40,13 +40,14 @@
 
     // Set up the score
     let currentScore = 0;
-    let highScore = 0;
+    let highScore = localStorage.getItem("highScore") || 0;
 
     // Update the score
     function updateScore() {
       currentScore++;
       if (currentScore > highScore) {
         highScore = currentScore;
+        localStorage.setItem("highScore", highScore);
       }
     }
 
