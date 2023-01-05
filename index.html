@@ -46,6 +46,7 @@
     // Draw the game board
     function drawBoard() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "red";
       for (let i = 0; i < boardSize; i++) {
         for (let j = 0; j < boardSize; j++) {
           drawCell(i, j);
