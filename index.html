@@ -42,6 +42,14 @@
     let currentScore = 0;
     let highScore = localStorage.getItem("highScore") || 0;
 
+    // Set up the game speed
+    let gameSpeed = 1000;
+
+    // Increase the game speed
+    function increaseGameSpeed() {
+      gameSpeed *= 0.9;
+    }
+
     // Update the score
     function updateScore() {
       currentScore++;
@@ -99,6 +107,7 @@ const head = {x: snake[0].x, y: snake[0].y};
       snake.unshift(head);
       if (head.x === apple.x && head.y === apple.y) {
         updateScore();
+        increaseGameSpeed();
         apple = {x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize)};
       } else {
         snake.pop();
@@ -118,7 +127,7 @@ const head = {x: snake[0].x, y: snake[0].y};
       drawScore();
 
       // Set up the next frame
-      setTimeout(gameLoop, 1000 / 6);
+      setTimeout(gameLoop, gameSpeed);
     }
 
     // Set up key listeners
