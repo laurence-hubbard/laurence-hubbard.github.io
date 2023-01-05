@@ -38,6 +38,25 @@
     // Set up the apple
     let apple = {x: 15, y: 15};
 
+    // Set up the score
+    let currentScore = 0;
+    let highScore = 0;
+
+    // Update the score
+    function updateScore() {
+      currentScore++;
+      if (currentScore > highScore) {
+        highScore = currentScore;
+      }
+    }
+
+    // Draw the score
+    function drawScore() {
+      ctx.font = "16px Arial";
+      ctx.fillText(`Score: ${currentScore}`, 8, 20);
+      ctx.fillText(`High Score: ${highScore}`, 8, 40);
+    }
+
     // Draw a cell on the game board
     function drawCell(x, y) {
       ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
@@ -78,6 +97,7 @@ const head = {x: snake[0].x, y: snake[0].y};
       if (direction === "down") head.y++;
       snake.unshift(head);
       if (head.x === apple.x && head.y === apple.y) {
+        updateScore();
         apple = {x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize)};
       } else {
         snake.pop();
@@ -93,6 +113,7 @@ const head = {x: snake[0].x, y: snake[0].y};
       drawBoard();
       drawSnake();
       drawApple();
+      drawScore();
 
       // Set up the next frame
       setTimeout(gameLoop, 1000 / 6);
