@@ -161,6 +161,7 @@
     let touchStart = null;
     let touchEnd = null;
     window.addEventListener("touchstart", event => {
+      event.preventDefault(); // this line will prevent the page from being dragged
       touchStart = event.touches[0];
     });
     window.addEventListener("touchend", event => {
