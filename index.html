@@ -96,10 +96,28 @@
       drawCell(apple.x, apple.y);
     }
 
+      // Update the direction based on the swipe gesture
+    function updateDirection() {
+      if (!touchStart || !touchEnd) return;
+
+      const dx = touchEnd.clientX - touchStart.clientX;
+      const dy = touchEnd.clientY - touchStart.clientY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 10) return;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) direction = "right";
+        else direction = "left";
+      } else {
+        if (dy > 0) direction = "down";
+        else direction = "up";
+      }
+    }
+
     // Set up the game loop
     function gameLoop() {
-// Update the snake's position
-const head = {x: snake[0].x, y: snake[0].y};
+      // Update the snake's position
+      const head = {x: snake[0].x, y: snake[0].y};
       if (direction === "right") head.x++;
       if (direction === "left") head.x--;
       if (direction === "up") head.y--;
@@ -137,6 +155,18 @@ const head = {x: snake[0].x, y: snake[0].y};
       if (event.key === "ArrowUp" && direction !== "down") direction = "up";
       if (event.key === "ArrowDown" && direction !== "up") direction = "down";
     });
+
+    // Set up touch listeners
+    let touchStart = null;
+    let touchEnd = null;
+    window.addEventListener("touchstart", event => {
+      touchStart = event.touches[0];
+    });
+    window.addEventListener("touchend", event => {
+      touchEnd = event.changedTouches[0];
+    });
+
+
 
     // Start the game
     gameLoop();
