@@ -118,6 +118,7 @@
     function gameLoop() {
       // Update the snake's position
       const head = {x: snake[0].x, y: snake[0].y};
+      updateDirection();
       if (direction === "right") head.x++;
       if (direction === "left") head.x--;
       if (direction === "up") head.y--;
