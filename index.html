@@ -21,7 +21,12 @@
 </head>
 <body>
   <canvas id="game"></canvas>
-  <button id="toggle-apple-edge" style="display:block;margin:10px auto;">Allow Apple At Edge: Off</button>
+  <!-- Move the button outside the <canvas> for visibility and add some contrast -->
+  <div style="text-align:center;margin-top:10px;">
+    <button id="toggle-apple-edge" style="font-size:16px;padding:8px 16px;background:#444;color:#fff;border:1px solid #fff;cursor:pointer;">
+      Allow Apple At Edge: Off
+    </button>
+  </div>
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
