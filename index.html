@@ -127,7 +127,11 @@
       if (head.x === apple.x && head.y === apple.y) {
         updateScore();
         increaseGameSpeed();
-        apple = {x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize)};
+        // Ensure apple is not placed at the edge
+        apple = {
+          x: Math.floor(Math.random() * (boardSize - 2)) + 1,
+          y: Math.floor(Math.random() * (boardSize - 2)) + 1
+        };
       } else {
         snake.pop();
       }
