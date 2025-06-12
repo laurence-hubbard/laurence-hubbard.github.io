@@ -138,11 +138,11 @@
     // Feature flag for apple in front of snake
     let appleInFront = false;
     // Feature flag for half-apple
-    let halfAppleEnabled = false;
+    let halfAppleEnabled = true; // Automatically ON
     // Half-apple state
     let halfApple = null;
     let halfAppleTimer = 0;
-    const halfAppleInterval = 3; // how many apples between half-apple spawns (was 10)
+    const halfAppleInterval = 3; // how many apples between half-apple spawns
 
     // Toggle button logic
     const toggleBtn = document.getElementById("toggle-apple-edge");
@@ -158,6 +158,7 @@
     });
 
     const toggleHalfBtn = document.getElementById("toggle-half-apple");
+    toggleHalfBtn.textContent = `Half Apple: On`; // Set button text to On by default
     toggleHalfBtn.addEventListener("click", () => {
       halfAppleEnabled = !halfAppleEnabled;
       toggleHalfBtn.textContent = `Half Apple: ${halfAppleEnabled ? "On" : "Off"}`;
@@ -256,7 +257,6 @@
         ateHalfApple = true;
         halfApple = null;
         // Halve the snake's size, minimum length 1
-        // Remove from the tail, not the head
         const newLength = Math.max(1, Math.floor(snake.length / 2));
         while (snake.length > newLength) {
           snake.pop();
@@ -267,12 +267,11 @@
 
       // Half-apple spawn logic
       if (halfAppleEnabled) {
-        if (ateApple) {
-          halfAppleTimer++;
-          if (halfAppleTimer >= halfAppleInterval) {
-            halfApple = placeHalfApple();
-            halfAppleTimer = 0;
-          }
+        // Always increment the timer, not just when apple is eaten
+        halfAppleTimer++;
+        if (halfAppleTimer >= halfAppleInterval && !halfApple) {
+          halfApple = placeHalfApple();
+          halfAppleTimer = 0;
         }
         // Remove half-apple if eaten
         if (ateHalfApple) {
@@ -322,4 +321,5 @@
     gameLoop();
   </script>
 </body>
+</html>
 </html>
