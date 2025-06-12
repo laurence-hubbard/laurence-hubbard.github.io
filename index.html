@@ -25,9 +25,11 @@
     <button id="toggle-apple-edge" style="font-size:16px;padding:8px 16px;background:#444;color:#fff;border:1px solid #fff;cursor:pointer;">
       Allow Apple At Edge: Off
     </button>
-    <!-- Move the second toggle button to its own line for clarity and ensure it's visible -->
     <button id="toggle-apple-in-front" style="font-size:16px;padding:8px 16px;background:#444;color:#fff;border:1px solid #fff;cursor:pointer;margin-left:10px;display:inline-block;">
       Apple In Front: Off
+    </button>
+    <button id="toggle-half-apple" style="font-size:16px;padding:8px 16px;background:#444;color:#fff;border:1px solid #fff;cursor:pointer;margin-left:10px;display:inline-block;">
+      Half Apple: Off
     </button>
   </div>
   <script>
@@ -103,6 +105,11 @@
     function drawApple() {
       ctx.fillStyle = "blue";
       drawCell(apple.x, apple.y);
+      // Draw half-apple if enabled and present
+      if (halfAppleEnabled && halfApple) {
+        ctx.fillStyle = "magenta";
+        drawCell(halfApple.x, halfApple.y);
+      }
     }
 
       // Update the direction based on the swipe gesture
@@ -127,6 +134,12 @@
     let allowAppleAtEdge = false;
     // Feature flag for apple in front of snake
     let appleInFront = false;
+    // Feature flag for half-apple
+    let halfAppleEnabled = false;
+    // Half-apple state
+    let halfApple = null;
+    let halfAppleTimer = 0;
+    const halfAppleInterval = 10; // how many apples between half-apple spawns
 
     // Toggle button logic
     const toggleBtn = document.getElementById("toggle-apple-edge");
@@ -139,6 +152,13 @@
     toggleFrontBtn.addEventListener("click", () => {
       appleInFront = !appleInFront;
       toggleFrontBtn.textContent = `Apple In Front: ${appleInFront ? "On" : "Off"}`;
+    });
+
+    const toggleHalfBtn = document.getElementById("toggle-half-apple");
+    toggleHalfBtn.addEventListener("click", () => {
+      halfAppleEnabled = !halfAppleEnabled;
+      toggleHalfBtn.textContent = `Half Apple: ${halfAppleEnabled ? "On" : "Off"}`;
+      if (!halfAppleEnabled) halfApple = null;
     });
 
     function placeApple() {
@@ -183,6 +203,29 @@
       }
     }
 
+    function placeHalfApple() {
+      // Place half-apple somewhere not on the snake or normal apple
+      let pos;
+      let tries = 0;
+      do {
+        pos = allowAppleAtEdge
+          ? {
+              x: Math.floor(Math.random() * boardSize),
+              y: Math.floor(Math.random() * boardSize)
+            }
+          : {
+              x: Math.floor(Math.random() * (boardSize - 2)) + 1,
+              y: Math.floor(Math.random() * (boardSize - 2)) + 1
+            };
+        tries++;
+        if (tries > 100) return null; // avoid infinite loop
+      } while (
+        snake.some(cell => cell.x === pos.x && cell.y === pos.y) ||
+        (apple && pos.x === apple.x && pos.y === apple.y)
+      );
+      return pos;
+    }
+
     // Set up the game loop
     function gameLoop() {
       // Update the snake's position
@@ -193,12 +236,41 @@
       if (direction === "up") head.y--;
       if (direction === "down") head.y++;
       snake.unshift(head);
+      let ateApple = false;
+      let ateHalfApple = false;
+
       if (head.x === apple.x && head.y === apple.y) {
         updateScore();
         increaseGameSpeed();
         apple = placeApple();
+        ateApple = true;
+      } else if (
+        halfAppleEnabled &&
+        halfApple &&
+        head.x === halfApple.x &&
+        head.y === halfApple.y
+      ) {
+        ateHalfApple = true;
+        halfApple = null;
+        // Halve the snake's size, minimum length 1
+        snake.length = Math.max(1, Math.ceil(snake.length / 2));
       } else {
         snake.pop();
+      }
+
+      // Half-apple spawn logic
+      if (halfAppleEnabled) {
+        if (ateApple) {
+          halfAppleTimer++;
+          if (halfAppleTimer >= halfAppleInterval) {
+            halfApple = placeHalfApple();
+            halfAppleTimer = 0;
+          }
+        }
+        // Remove half-apple if eaten
+        if (ateHalfApple) {
+          halfAppleTimer = 0;
+        }
       }
 
       // Check for game over
