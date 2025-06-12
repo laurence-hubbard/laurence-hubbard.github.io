@@ -26,6 +26,9 @@
     <button id="toggle-apple-edge" style="font-size:16px;padding:8px 16px;background:#444;color:#fff;border:1px solid #fff;cursor:pointer;">
       Allow Apple At Edge: Off
     </button>
+    <button id="toggle-apple-in-front" style="font-size:16px;padding:8px 16px;background:#444;color:#fff;border:1px solid #fff;cursor:pointer;margin-left:10px;">
+      Apple In Front: Off
+    </button>
   </div>
   <script>
     const canvas = document.getElementById("game");
@@ -122,6 +125,8 @@
 
     // Feature flag for apple edge placement
     let allowAppleAtEdge = false;
+    // Feature flag for apple in front of snake
+    let appleInFront = false;
 
     // Toggle button logic
     const toggleBtn = document.getElementById("toggle-apple-edge");
@@ -130,8 +135,40 @@
       toggleBtn.textContent = `Allow Apple At Edge: ${allowAppleAtEdge ? "On" : "Off"}`;
     });
 
+    const toggleFrontBtn = document.getElementById("toggle-apple-in-front");
+    toggleFrontBtn.addEventListener("click", () => {
+      appleInFront = !appleInFront;
+      toggleFrontBtn.textContent = `Apple In Front: ${appleInFront ? "On" : "Off"}`;
+    });
+
     function placeApple() {
-      if (allowAppleAtEdge) {
+      if (appleInFront) {
+        // Place apple immediately in front of the snake's head, based on direction
+        const head = snake[0];
+        let newApple = {x: head.x, y: head.y};
+        if (direction === "right") newApple.x++;
+        if (direction === "left") newApple.x--;
+        if (direction === "up") newApple.y--;
+        if (direction === "down") newApple.y++;
+        // Clamp to board and avoid placing on snake body
+        if (
+          newApple.x < 0 || newApple.x >= boardSize ||
+          newApple.y < 0 || newApple.y >= boardSize ||
+          snake.some(cell => cell.x === newApple.x && cell.y === newApple.y)
+        ) {
+          // Fallback to random placement if in front is invalid
+          return allowAppleAtEdge
+            ? {
+                x: Math.floor(Math.random() * boardSize),
+                y: Math.floor(Math.random() * boardSize)
+              }
+            : {
+                x: Math.floor(Math.random() * (boardSize - 2)) + 1,
+                y: Math.floor(Math.random() * (boardSize - 2)) + 1
+              };
+        }
+        return newApple;
+      } else if (allowAppleAtEdge) {
         // Apple can be anywhere
         return {
           x: Math.floor(Math.random() * boardSize),
