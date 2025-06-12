@@ -21,6 +21,7 @@
 </head>
 <body>
   <canvas id="game"></canvas>
+  <button id="toggle-apple-edge" style="display:block;margin:10px auto;">Allow Apple At Edge: Off</button>
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
@@ -114,6 +115,32 @@
       }
     }
 
+    // Feature flag for apple edge placement
+    let allowAppleAtEdge = false;
+
+    // Toggle button logic
+    const toggleBtn = document.getElementById("toggle-apple-edge");
+    toggleBtn.addEventListener("click", () => {
+      allowAppleAtEdge = !allowAppleAtEdge;
+      toggleBtn.textContent = `Allow Apple At Edge: ${allowAppleAtEdge ? "On" : "Off"}`;
+    });
+
+    function placeApple() {
+      if (allowAppleAtEdge) {
+        // Apple can be anywhere
+        return {
+          x: Math.floor(Math.random() * boardSize),
+          y: Math.floor(Math.random() * boardSize)
+        };
+      } else {
+        // Apple cannot be at the edge
+        return {
+          x: Math.floor(Math.random() * (boardSize - 2)) + 1,
+          y: Math.floor(Math.random() * (boardSize - 2)) + 1
+        };
+      }
+    }
+
     // Set up the game loop
     function gameLoop() {
       // Update the snake's position
@@ -127,11 +154,7 @@
       if (head.x === apple.x && head.y === apple.y) {
         updateScore();
         increaseGameSpeed();
-        // Ensure apple is not placed at the edge
-        apple = {
-          x: Math.floor(Math.random() * (boardSize - 2)) + 1,
-          y: Math.floor(Math.random() * (boardSize - 2)) + 1
-        };
+        apple = placeApple();
       } else {
         snake.pop();
       }
