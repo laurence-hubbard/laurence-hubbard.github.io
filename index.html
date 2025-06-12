@@ -142,7 +142,7 @@
     // Half-apple state
     let halfApple = null;
     let halfAppleTimer = 0;
-    const halfAppleInterval = 10; // how many apples between half-apple spawns
+    const halfAppleInterval = 3; // how many apples between half-apple spawns (was 10)
 
     // Toggle button logic
     const toggleBtn = document.getElementById("toggle-apple-edge");
@@ -256,7 +256,11 @@
         ateHalfApple = true;
         halfApple = null;
         // Halve the snake's size, minimum length 1
-        snake.length = Math.max(1, Math.ceil(snake.length / 2));
+        // Remove from the tail, not the head
+        const newLength = Math.max(1, Math.floor(snake.length / 2));
+        while (snake.length > newLength) {
+          snake.pop();
+        }
       } else {
         snake.pop();
       }
